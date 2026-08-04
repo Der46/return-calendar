@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Coin999-回歸帳號排程</title>
+
+    <style>
+        :root {
+            --bg: #f4f7fb;
+            --card: #ffffff;
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --today: #fff7ed;
+            --event: #dbeafe;
+            --event-text: #1e40af;
+            --danger: #fee2e2;
+            --danger-text: #991b1b;
+            --success: #dcfce7;
+            --success-text: #166534;
+            --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                "Microsoft JhengHei",
+                "Noto Sans TC",
+                sans-serif;
+            background: linear-gradient(135deg, #eff6ff, #f8fafc);
+            color: var(--text);
+        }
+
+        .page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 28px 18px 48px;
+        }
+
+        .header {
+            margin-bottom: 22px;
+        }
+
+        .header h1 {
+            margin: 0 0 8px;
+            font-size: 32px;
+            letter-spacing: 0.5px;
+        }
+
+        .header p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        .panel {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            padding: 22px;
+            margin-bottom: 22px;
+        }
+
+        .panel-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .panel-title h2 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 700;
+            background: var(--success);
+            color: var(--success-text);
+            white-space: nowrap;
+        }
+
+        .week-return-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        .return-card {
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 14px;
+            background: #f8fafc;
+        }
+
+        .return-card .name {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: var(--primary-dark);
+        }
+
+        .return-card .meta {
+            display: grid;
+            gap: 4px;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .return-card .meta span {
+            color: var(--muted);
+        }
+
+        .leave-date {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 5px 8px;
+            border-radius: 8px;
+            background: var(--danger);
+            color: var(--danger-text);
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .empty {
+            color: var(--muted);
+            padding: 12px 0;
+        }
+
+        .calendar-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .calendar-title {
+            font-size: 26px;
+            font-weight: 900;
+        }
+
+        .toolbar-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        button {
+            border: 0;
+            background: var(--primary);
+            color: white;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.2s ease;
+            font-family: inherit;
+        }
+
+        button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        button.secondary {
+            background: #e5e7eb;
+            color: #111827;
+        }
+
+        button.secondary:hover {
+            background: #d1d5db;
+        }
+
+        .calendar {
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            overflow: hidden;
+            background: white;
+        }
+
+        .weekdays,
+        .days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+        }
+
+        .weekday {
+            background: #f1f5f9;
+            padding: 12px 8px;
+            text-align: center;
+            font-weight: 900;
+            color: #334155;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .day {
+            min-height: 135px;
+            padding: 10px;
+            border-right: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            position: relative;
+            background: white;
+        }
+
+        .day:nth-child(7n) {
+            border-right: 0;
+        }
+
+        .day.other-month {
+            background: #f8fafc;
+            color: #cbd5e1;
+        }
+
+        .day.today {
+            background: var(--today);
+            box-shadow: inset 0 0 0 2px #fb923c;
+        }
+
+        .day-number {
+            font-weight: 900;
+            font-size: 15px;
+            margin-bottom: 8px;
+        }
+
+        .event {
+            background: var(--event);
+            color: var(--event-text);
+            padding: 6px 7px;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 800;
+            margin-bottom: 5px;
+            line-height: 1.35;
+            cursor: default;
+        }
+
+        .event small {
+            display: block;
+            color: #475569;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .legend {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .legend-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .dot.event-dot {
+            background: var(--event);
+            border: 1px solid #93c5fd;
+        }
+
+        .dot.today-dot {
+            background: var(--today);
+            border: 1px solid #fb923c;
+        }
+
+        @media (max-width: 720px) {
+            body {
+                background: #f8fafc;
+            }
+
+            .page {
+                width: 100%;
+                max-width: none;
+                padding: 14px 8px 28px;
+            }
+
+            .header {
+                margin-bottom: 14px;
+                padding: 0 4px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+                margin-bottom: 6px;
+            }
+
+            .header p {
+                font-size: 13px;
+                line-height: 1.45;
+            }
+
+            .panel {
+                padding: 12px;
+                border-radius: 14px;
+                margin-bottom: 14px;
+            }
+
+            .panel-title {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 8px;
+                margin-bottom: 10px;
+            }
+
+            .panel-title h2 {
+                font-size: 19px;
+            }
+
+            .badge {
+                font-size: 12px;
+                padding: 5px 9px;
+            }
+
+            .week-return-list {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .return-card {
+                padding: 11px;
+                border-radius: 12px;
+            }
+
+            .return-card .name {
+                font-size: 18px;
+                margin-bottom: 6px;
+            }
+
+            .return-card .meta {
+                font-size: 13px;
+                gap: 3px;
+            }
+
+            .leave-date {
+                font-size: 12px;
+                padding: 4px 7px;
+            }
+
+            .calendar-toolbar {
+                gap: 10px;
+                margin-bottom: 10px;
+            }
+
+            .calendar-title {
+                width: 100%;
+                font-size: 21px;
+                line-height: 1.2;
+            }
+
+            .toolbar-buttons {
+                width: 100%;
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 6px;
+            }
+
+            button {
+                width: 100%;
+                padding: 8px 6px;
+                border-radius: 9px;
+                font-size: 13px;
+            }
+
+            .calendar {
+                border-radius: 12px;
+            }
+
+            .weekday {
+                padding: 7px 2px;
+                font-size: 12px;
+                line-height: 1;
+            }
+
+            .day {
+                min-height: 52px;
+                padding: 4px 3px;
+            }
+
+            .day-number {
+                font-size: 12px;
+                margin-bottom: 3px;
+                line-height: 1;
+            }
+
+            .event {
+                padding: 3px 4px;
+                border-radius: 6px;
+                font-size: 10px;
+                line-height: 1.2;
+                margin-bottom: 3px;
+                word-break: keep-all;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .calendar .event small {
+                display: none;
+            }
+
+            .day.today {
+                box-shadow: inset 0 0 0 1.5px #fb923c;
+            }
+
+            .legend {
+                margin-top: 10px;
+                font-size: 12px;
+                gap: 8px;
+            }
+
+            .dot {
+                width: 10px;
+                height: 10px;
+                border-radius: 3px;
+            }
+        }
+
+        @media (max-width: 430px) {
+            .page {
+                padding: 10px 5px 24px;
+            }
+
+            .panel {
+                padding: 9px;
+                border-radius: 12px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .header p {
+                font-size: 12px;
+            }
+
+            .calendar-title {
+                font-size: 19px;
+            }
+
+            .weekday {
+                font-size: 11px;
+                padding: 6px 1px;
+            }
+
+            .day {
+                min-height: 48px;
+                padding: 3px 2px;
+            }
+
+            .day-number {
+                font-size: 11px;
+                margin-bottom: 2px;
+            }
+
+            .event {
+                font-size: 9px;
+                padding: 2px 3px;
+                border-radius: 5px;
+                margin-bottom: 2px;
+            }
+
+            button {
+                font-size: 12px;
+                padding: 7px 4px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="page">
+        <section class="header">
+            <h1>回歸帳號萬年曆</h1>
+            <p>依照第一次回歸日期自動輪組，並計算本週回歸、下次回歸與最晚可離開時間。</p>
+        </section>
+
+        <section class="panel">
+            <div class="panel-title">
+                <h2>本週回歸</h2>
+                <span class="badge" id="currentWeekRange">計算中</span>
+            </div>
+
+            <div id="weekReturnList" class="week-return-list"></div>
+        </section>
+
+        <section class="panel">
+            <div class="calendar-toolbar">
+                <div class="calendar-title" id="calendarTitle"></div>
+
+                <div class="toolbar-buttons">
+                    <button class="secondary" onclick="changeMonth(-1)">上個月</button>
+                    <button onclick="goToday()">回到本月</button>
+                    <button class="secondary" onclick="changeMonth(1)">下個月</button>
+                </div>
+            </div>
+
+            <div class="calendar">
+                <div class="weekdays">
+                    <div class="weekday">日</div>
+                    <div class="weekday">一</div>
+                    <div class="weekday">二</div>
+                    <div class="weekday">三</div>
+                    <div class="weekday">四</div>
+                    <div class="weekday">五</div>
+                    <div class="weekday">六</div>
+                </div>
+
+                <div class="days" id="calendarDays"></div>
+            </div>
+
+            <div class="legend">
+                <span class="legend-item">
+                    <span class="dot event-dot"></span>
+                    回歸日
+                </span>
+
+                <span class="legend-item">
+                    <span class="dot today-dot"></span>
+                    今日
+                </span>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const fixedToday = new Date();
+
+        let currentYear = fixedToday.getFullYear();
+        let currentMonth = fixedToday.getMonth();
+
+        let groups = [];
+        let schedule = [];
+
+        let settings = {
+            startDate: "2026/08/03",
+            generateWeeks: 80,
+            minEnterGapDays: 30,
+            leaveBeforeNextDays: 31
+        };
+
+        async function loadJsonData() {
+            try {
+                const response = await fetch("./data.json", {
+                    cache: "no-store"
+                });
+
+                if (!response.ok) {
+                    throw new Error(`讀取 data.json 失敗，HTTP 狀態：${response.status}`);
+                }
+
+                const data = await response.json();
+
+                settings = {
+                    ...settings,
+                    ...(data.settings || {})
+                };
+
+                groups = data.groups || [];
+
+                schedule = generateScheduleByGroups();
+
+                renderCurrentWeekReturns();
+                renderCalendar();
+            } catch (error) {
+                console.error(error);
+
+                document.getElementById("weekReturnList").innerHTML = `
+        <div class="empty">
+          無法讀取 data.json，請確認檔案是否存在，且是否透過本機伺服器開啟。
+        </div>
+      `;
+            }
+        }
+
+        function parseDate(dateString) {
+            const [year, month, day] = dateString.split("/").map(Number);
+            return new Date(year, month - 1, day);
+        }
+
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
+
+            return `${year}/${month}/${day}`;
+        }
+
+        function formatDateWithWeekday(date) {
+            const weekdays = ["日", "一", "二", "三", "四", "五", "六"];
+            return `${formatDate(date)}（${weekdays[date.getDay()]}）`;
+        }
+
+        function addDays(date, days) {
+            const result = new Date(date);
+            result.setDate(result.getDate() + days);
+            return result;
+        }
+
+        function getStartOfWeek(date) {
+            const result = new Date(date);
+            const day = result.getDay();
+            const diffToMonday = day === 0 ? -6 : 1 - day;
+
+            result.setDate(result.getDate() + diffToMonday);
+            result.setHours(0, 0, 0, 0);
+
+            return result;
+        }
+
+        function getEndOfWeek(date) {
+            const result = getStartOfWeek(date);
+            result.setDate(result.getDate() + 7);
+            result.setHours(0, 0, 0, 0);
+
+            return result;
+        }
+
+        function getDayDiff(dateA, dateB) {
+            const oneDay = 24 * 60 * 60 * 1000;
+
+            const cleanA = new Date(
+                dateA.getFullYear(),
+                dateA.getMonth(),
+                dateA.getDate()
+            );
+
+            const cleanB = new Date(
+                dateB.getFullYear(),
+                dateB.getMonth(),
+                dateB.getDate()
+            );
+
+            return Math.round((cleanA - cleanB) / oneDay);
+        }
+
+        function validateStartDateIsMonday() {
+            const startDate = parseDate(settings.startDate);
+
+            if (startDate.getDay() !== 1) {
+                console.warn("settings.startDate 不是週一，目前日期：", settings.startDate);
+            }
+        }
+
+        function validateGroups() {
+            if (!groups.length) {
+                console.warn("data.json 裡沒有 groups 資料。");
+                return;
+            }
+
+            if (groups.length !== 6) {
+                console.warn(`目前 groups 不是 6 組，而是 ${groups.length} 組：`, groups);
+            }
+
+            groups.forEach((group, groupIndex) => {
+                if (!Array.isArray(group)) {
+                    console.warn(`第 ${groupIndex + 1} 組不是陣列：`, group);
+                    return;
+                }
+
+                if (group.length !== 2) {
+                    console.warn(
+                        `第 ${groupIndex + 1} 組人數不是 2 人，目前是 ${group.length} 人：`,
+                        group
+                    );
+                }
+
+                group.forEach(member => {
+                    if (!member.account || !member.enterDate) {
+                        console.warn(
+                            `第 ${groupIndex + 1} 組有成員缺少 account 或 enterDate：`,
+                            member
+                        );
+                    }
+                });
+            });
+        }
+
+        function generateScheduleByGroups() {
+            validateStartDateIsMonday();
+            validateGroups();
+
+            if (!groups.length) {
+                return [];
+            }
+
+            const generated = [];
+            const lastEnterMap = {};
+
+            const startDate = parseDate(settings.startDate);
+            const totalWeeks = Number(settings.generateWeeks || 80);
+
+            for (let weekIndex = 0; weekIndex < totalWeeks; weekIndex++) {
+                const groupIndex = weekIndex % groups.length;
+                const group = groups[groupIndex];
+
+                const scheduleDateObj = addDays(startDate, weekIndex * 7);
+                const scheduleDate = formatDate(scheduleDateObj);
+
+                if (!Array.isArray(group)) {
+                    continue;
+                }
+
+                group.forEach(member => {
+                    if (!member.account || !member.enterDate) {
+                        return;
+                    }
+
+                    const firstEnterDateObj = parseDate(member.enterDate);
+
+                    /**
+                     * 核心規則：
+                     * groups 決定固定輪替順序。
+                     * member.enterDate 只決定該帳號第一次出現日期。
+                     *
+                     * 例：
+                     * 若彤屬於第 4 組，但 enterDate 是 2026/10/05。
+                     * 所以第 4 組在 2026/08/24 輪到時，若彤不顯示。
+                     * 第 4 組在 2026/10/05 再次輪到時，若彤才顯示。
+                     */
+                    if (scheduleDateObj < firstEnterDateObj) {
+                        return;
+                    }
+
+                    const lastEnterDate = lastEnterMap[member.account];
+
+                    if (lastEnterDate) {
+                        const gapDays = getDayDiff(scheduleDateObj, lastEnterDate);
+
+                        if (gapDays <= settings.minEnterGapDays) {
+                            console.warn(
+                                `${member.account} 的進入間隔只有 ${gapDays} 天，未超過 ${settings.minEnterGapDays} 天`,
+                                {
+                                    account: member.account,
+                                    previous: formatDate(lastEnterDate),
+                                    current: scheduleDate
+                                }
+                            );
+                        }
+                    }
+
+                    generated.push({
+                        account: member.account,
+                        enterDate: scheduleDate
+                    });
+
+                    lastEnterMap[member.account] = scheduleDateObj;
+                });
+            }
+
+            return generated.sort((a, b) => {
+                const dateDiff = parseDate(a.enterDate) - parseDate(b.enterDate);
+
+                if (dateDiff !== 0) {
+                    return dateDiff;
+                }
+
+                return a.account.localeCompare(b.account, "zh-Hant");
+            });
+        }
+
+        function calculateNextEnterDate(account, currentEnterDate) {
+            const currentDate = parseDate(currentEnterDate);
+
+            const futureRecord = schedule
+                .filter(item => {
+                    if (item.account !== account) return false;
+
+                    const itemDate = parseDate(item.enterDate);
+                    return itemDate > currentDate;
+                })
+                .sort((a, b) => parseDate(a.enterDate) - parseDate(b.enterDate))[0];
+
+            if (futureRecord) {
+                return parseDate(futureRecord.enterDate);
+            }
+
+            const cycleDays = groups.length * 7;
+            return addDays(currentDate, cycleDays);
+        }
+
+        function getScheduleDetail(account, currentEnterDate) {
+            const nextEnterDate = calculateNextEnterDate(account, currentEnterDate);
+            const latestLeaveDate = addDays(
+                nextEnterDate,
+                -settings.leaveBeforeNextDays
+            );
+
+            return {
+                nextEnterDate,
+                latestLeaveDate
+            };
+        }
+
+        function renderCurrentWeekReturns() {
+            const start = getStartOfWeek(fixedToday);
+            const end = getEndOfWeek(fixedToday);
+
+            document.getElementById("currentWeekRange").textContent =
+                `${formatDate(start)} - ${formatDate(end)}`;
+
+            const weekReturns = schedule
+                .filter(item => {
+                    const enterDate = parseDate(item.enterDate);
+                    return enterDate >= start && enterDate < end;
+                })
+                .sort((a, b) => parseDate(a.enterDate) - parseDate(b.enterDate));
+
+            const container = document.getElementById("weekReturnList");
+            container.innerHTML = "";
+
+            if (weekReturns.length === 0) {
+                container.innerHTML = `<div class="empty">本週沒有回歸帳號。</div>`;
+                return;
+            }
+
+            weekReturns.forEach(item => {
+                const detail = getScheduleDetail(item.account, item.enterDate);
+
+                const card = document.createElement("div");
+                card.className = "return-card";
+
+                card.innerHTML = `
+        <div class="name">${item.account}</div>
+
+        <div class="meta">
+          <div>
+            <span>回歸日期：</span>${formatDateWithWeekday(parseDate(item.enterDate))}
+          </div>
+
+          <div>
+            <span>下次回歸：</span>${formatDateWithWeekday(detail.nextEnterDate)}
+          </div>
+        </div>
+
+        <div class="leave-date">
+          最晚可離開：${formatDateWithWeekday(detail.latestLeaveDate)}
+        </div>
+      `;
+
+                container.appendChild(card);
+            });
+        }
+
+        function getEventsByDate(dateString) {
+            return schedule.filter(item => item.enterDate === dateString);
+        }
+
+        function renderCalendar() {
+            const calendarTitle = document.getElementById("calendarTitle");
+            const calendarDays = document.getElementById("calendarDays");
+
+            calendarTitle.textContent = `${currentYear} 年 ${currentMonth + 1} 月`;
+            calendarDays.innerHTML = "";
+
+            const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+            const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
+
+            const startDay = firstDayOfMonth.getDay();
+            const daysInMonth = lastDayOfMonth.getDate();
+
+            const prevMonthLastDate = new Date(currentYear, currentMonth, 0).getDate();
+            const totalCells = 42;
+
+            for (let i = 0; i < totalCells; i++) {
+                const dayCell = document.createElement("div");
+                dayCell.className = "day";
+
+                let cellDate;
+                let dayNumber;
+
+                if (i < startDay) {
+                    dayNumber = prevMonthLastDate - startDay + i + 1;
+                    cellDate = new Date(currentYear, currentMonth - 1, dayNumber);
+                    dayCell.classList.add("other-month");
+                } else if (i >= startDay + daysInMonth) {
+                    dayNumber = i - startDay - daysInMonth + 1;
+                    cellDate = new Date(currentYear, currentMonth + 1, dayNumber);
+                    dayCell.classList.add("other-month");
+                } else {
+                    dayNumber = i - startDay + 1;
+                    cellDate = new Date(currentYear, currentMonth, dayNumber);
+                }
+
+                const cellDateString = formatDate(cellDate);
+
+                if (
+                    cellDate.getFullYear() === fixedToday.getFullYear() &&
+                    cellDate.getMonth() === fixedToday.getMonth() &&
+                    cellDate.getDate() === fixedToday.getDate()
+                ) {
+                    dayCell.classList.add("today");
+                }
+
+                const dayNumberDiv = document.createElement("div");
+                dayNumberDiv.className = "day-number";
+                dayNumberDiv.textContent = dayNumber;
+                dayCell.appendChild(dayNumberDiv);
+
+                const events = getEventsByDate(cellDateString);
+
+                events.forEach(event => {
+                    const detail = getScheduleDetail(event.account, event.enterDate);
+
+                    const eventDiv = document.createElement("div");
+                    eventDiv.className = "event";
+
+                    eventDiv.innerHTML = `
+          ${event.account} 回歸
+          <small>下次：${formatDate(detail.nextEnterDate)}</small>
+          <small>最晚離開：${formatDate(detail.latestLeaveDate)}</small>
+        `;
+
+                    dayCell.appendChild(eventDiv);
+                });
+
+                calendarDays.appendChild(dayCell);
+            }
+        }
+
+        function changeMonth(offset) {
+            currentMonth += offset;
+
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+
+            renderCalendar();
+        }
+
+        function goToday() {
+            currentYear = fixedToday.getFullYear();
+            currentMonth = fixedToday.getMonth();
+
+            renderCalendar();
+        }
+
+        loadJsonData();
+    </script>
+
+</body>
+
+</html>

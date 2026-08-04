@@ -1,0 +1,70 @@
+{
+    "settings": {
+        "startDate": "2026/08/03",
+        "generateWeeks": 10000,
+        "minEnterGapDays": 30,
+        "leaveBeforeNextDays": 31
+    },
+    "groups": [
+        [
+            {
+                "account": "大Xin",
+                "enterDate": "2026/08/03"
+            },
+            {
+                "account": "沐晨",
+                "enterDate": "2026/08/03"
+            }
+        ],
+        [
+            {
+                "account": "威諺",
+                "enterDate": "2026/08/10"
+            },
+            {
+                "account": "酷瑪",
+                "enterDate": "2026/08/10"
+            }
+        ],
+        [
+            {
+                "account": "芷涵",
+                "enterDate": "2026/08/17"
+            },
+            {
+                "account": "Tony",
+                "enterDate": "2026/08/17"
+            }
+        ],
+        [
+            {
+                "account": "智恩",
+                "enterDate": "2026/08/24"
+            },
+            {
+                "account": "若彤",
+                "enterDate": "2026/10/05"
+            }
+        ],
+        [
+            {
+                "account": "雲秦",
+                "enterDate": "2026/08/31"
+            },
+            {
+                "account": "墨淵",
+                "enterDate": "2026/10/12"
+            }
+        ],
+        [
+            {
+                "account": "家俊",
+                "enterDate": "2026/09/07"
+            },
+            {
+                "account": "傳勝",
+                "enterDate": "2026/09/07"
+            }
+        ]
+    ]
+}

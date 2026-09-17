@@ -686,11 +686,9 @@
                     return;
                 }
 
-                if (group.length !== 2) {
-                    console.warn(
-                        `第 ${groupIndex + 1} 組人數不是 2 人，目前是 ${group.length} 人：`,
-                        group
-                    );
+                // 移除原先寫死 2 人的警告，改為檢查至少有成員
+                if (group.length === 0) {
+                    console.warn(`第 ${groupIndex + 1} 組沒有任何成員`);
                 }
 
                 group.forEach(member => {
@@ -736,17 +734,18 @@
 
                     const firstEnterDateObj = parseDate(member.enterDate);
 
-                    /**
-                     * 核心規則：
-                     * groups 決定固定輪替順序。
-                     * member.enterDate 只決定該帳號第一次出現日期。
-                     *
-                     * 例：
-                     * 若彤屬於第 4 組，但 enterDate 是 2026/10/05。
-                     * 所以第 4 組在 2026/08/24 輪到時，若彤不顯示。
-                     * 第 4 組在 2026/10/05 再次輪到時，若彤才顯示。
-                     */
+                    // 1. 尚未到該帳號的首次開放日期
                     if (scheduleDateObj < firstEnterDateObj) {
+                        return;
+                    }
+
+                    // 2. 支援單次限定活動（如黑五限定支援）
+                    if (member.endDate && scheduleDate !== member.endDate) {
+                        return;
+                    }
+
+                    // 3. 跳過指定的冷卻衝突日期（如黑五前夕不可出勤）
+                    if (Array.isArray(member.skipDates) && member.skipDates.includes(scheduleDate)) {
                         return;
                     }
 

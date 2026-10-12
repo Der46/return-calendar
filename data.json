@@ -8,10 +8,12 @@
     "groups": [
         [
             { "account": "沐晨", "enterDate": "2026/08/03" },
+            { "account": "沐晨B", "enterDate": "2026/09/14" },
             { "account": "Xin", "enterDate": "2026/08/03", "skipDates": ["2026/10/26", "2026/12/07"] }
         ],
         [
             { "account": "威諺", "enterDate": "2026/08/10" },
+            { "account": "威諺B", "enterDate": "2026/11/02" },
             { "account": "椽家", "enterDate": "2026/09/21" },
             { "account": "酷瑪", "enterDate": "2026/08/10", "skipDates": ["2026/11/02", "2026/12/14"] }
         ],

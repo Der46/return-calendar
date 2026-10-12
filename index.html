@@ -1070,15 +1070,10 @@
                         return;
                     }
 
-                    // 4. 個別日期調整（例如該週改成週二才回歸）
-                    const actualDate =
-                        (member.moveDates && member.moveDates[scheduleDate]) || scheduleDate;
-                    const actualDateObj = parseDate(actualDate);
-
                     const lastEnterDate = lastEnterMap[member.account];
 
                     if (lastEnterDate) {
-                        const gapDays = getDayDiff(actualDateObj, lastEnterDate);
+                        const gapDays = getDayDiff(scheduleDateObj, lastEnterDate);
 
                         if (gapDays <= settings.minEnterGapDays) {
                             console.warn(
@@ -1086,7 +1081,7 @@
                                 {
                                     account: member.account,
                                     previous: formatDate(lastEnterDate),
-                                    current: actualDate
+                                    current: scheduleDate
                                 }
                             );
                         }
@@ -1094,12 +1089,12 @@
 
                     generated.push({
                         account: member.account,
-                        enterDate: actualDate,
+                        enterDate: scheduleDate,
                         special: Boolean(member.endDate),
                         note: member.note || ""
                     });
 
-                    lastEnterMap[member.account] = actualDateObj;
+                    lastEnterMap[member.account] = scheduleDateObj;
                 });
             }
 

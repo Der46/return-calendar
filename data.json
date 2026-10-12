@@ -7,119 +7,39 @@
     },
     "groups": [
         [
-            {
-                "account": "沐晨",
-                "enterDate": "2026/08/03"
-            },
-            {
-                "account": "大Xin",
-                "enterDate": "2026/08/03",
-                "skipDates": [
-                    "2026/10/26",
-                    "2026/12/07"
-                ]
-            },
-            {
-                "account": "沐晨B",
-                "enterDate": "2026/09/14"
-            }
+            { "account": "沐晨", "enterDate": "2026/08/03" },
+            { "account": "Xin", "enterDate": "2026/08/03", "skipDates": ["2026/10/26", "2026/12/07"] }
         ],
         [
-            {
-                "account": "威諺",
-                "enterDate": "2026/08/10"
-            },
-            {
-                "account": "椽家",
-                "enterDate": "2026/09/21"
-            },
-            {
-                "account": "酷瑪",
-                "enterDate": "2026/08/10",
-                "skipDates": [
-                    "2026/11/02",
-                    "2026/12/14"
-                ]
-            }
+            { "account": "威諺", "enterDate": "2026/08/10" },
+            { "account": "椽家", "enterDate": "2026/09/21" },
+            { "account": "酷瑪", "enterDate": "2026/08/10", "skipDates": ["2026/11/02", "2026/12/14"] }
         ],
         [
-            {
-                "account": "芷涵",
-                "enterDate": "2026/08/17"
-            },
-            {
-                "account": "Tony",
-                "enterDate": "2026/08/17",
-                "skipDates": [
-                    "2026/11/09",
-                    "2026/12/21"
-                ]
-            },
-            {
-                "account": "芷涵B",
-                "enterDate": "2026/09/28"
-            }
+            { "account": "芷涵", "enterDate": "2026/08/17" },
+            { "account": "芷涵B", "enterDate": "2026/09/28" },
+            { "account": "Tony", "enterDate": "2026/08/17", "skipDates": ["2026/11/09", "2026/12/21"] }
         ],
         [
-            {
-                "account": "智恩",
-                "enterDate": "2026/08/24"
-            },
-            {
-                "account": "若彤",
-                "enterDate": "2026/10/05"
-            },
-            {
-                "account": "智恩B",
-                "enterDate": "2026/10/05"
-            }
+            { "account": "智恩", "enterDate": "2026/08/24" },
+            { "account": "若彤", "enterDate": "2026/10/05" },
+            { "account": "智恩B", "enterDate": "2026/10/05", "moveDates": { "2026/10/05": "2026/10/06" } }
         ],
         [
-            {
-                "account": "雲秦",
-                "enterDate": "2026/08/31"
-            },
-            {
-                "account": "墨淵",
-                "enterDate": "2026/10/12"
-            },
-            {
-                "account": "雲秦B",
-                "enterDate": "2026/10/12"
-            },
-            {
-                "account": "寶莉",
-                "enterDate": "2026/10/12"
-            },
-            {
-                "account": "大Xin",
-                "enterDate": "2026/11/23",
-                "endDate": "2026/11/23"
-            },
-            {
-                "account": "酷瑪",
-                "enterDate": "2026/11/23",
-                "endDate": "2026/11/23"
-            },
-            {
-                "account": "Tony",
-                "enterDate": "2026/11/23",
-                "endDate": "2026/11/23"
-            }
+            { "account": "雲秦", "enterDate": "2026/08/31" },
+            { "account": "雲秦B", "enterDate": "2026/10/12" },
+            { "account": "墨淵", "enterDate": "2026/10/12" },
+            { "account": "寶莉", "enterDate": "2026/10/12" },
+            { "account": "能協", "enterDate": "2026/11/23", "endDate": "2026/11/23", "note": "黑色星期五" },
+            { "account": "Xin", "enterDate": "2026/11/23", "endDate": "2026/11/23", "note": "黑色星期五" },
+            { "account": "酷瑪", "enterDate": "2026/11/23", "endDate": "2026/11/23", "note": "黑色星期五" },
+            { "account": "Tony", "enterDate": "2026/11/23", "endDate": "2026/11/23", "note": "黑色星期五" }
         ],
         [
-            {
-                "account": "傳勝",
-                "enterDate": "2026/09/07"
-            },
-            {
-                "account": "家俊",
-                "enterDate": "2026/09/07"
-            },
-            {
-                "account": "家俊B",
-                "enterDate": "2026/09/07"
-            }
+            { "account": "傳勝", "enterDate": "2026/09/07" },
+            { "account": "傳勝B", "enterDate": "2026/10/19" },
+            { "account": "家俊", "enterDate": "2026/09/07" },
+            { "account": "家俊B", "enterDate": "2026/09/07" }
         ]
     ]
 }

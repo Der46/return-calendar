@@ -493,6 +493,214 @@
                 padding: 7px 4px;
             }
         }
+
+        /* ===== 特殊活動 / 個人版本提示 ===== */
+
+        .event.special {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .dot.special-dot {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+        }
+
+        .tag {
+            display: inline-block;
+            margin-left: 6px;
+            padding: 2px 6px;
+            border-radius: 6px;
+            background: #fef3c7;
+            color: #92400e;
+            font-size: 12px;
+            font-weight: 700;
+            vertical-align: middle;
+        }
+
+        .badge.custom {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .notice {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 22px;
+            padding: 12px 16px;
+            border-radius: 14px;
+            background: #fffbeb;
+            border: 1px solid #fcd34d;
+            color: #92400e;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .notice.show {
+            display: flex;
+        }
+
+        /* ===== 排程編輯器 ===== */
+
+        .editor-hint {
+            margin: 0 0 14px;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .editor-settings {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .field {
+            display: grid;
+            gap: 4px;
+            font-size: 13px;
+            color: var(--muted);
+            font-weight: 700;
+        }
+
+        .field input,
+        .field select,
+        .member-row input,
+        .member-row select {
+            width: 100%;
+            min-width: 0;
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font: inherit;
+            font-size: 14px;
+            color: var(--text);
+            background: white;
+        }
+
+        .editor-groups {
+            display: grid;
+            gap: 12px;
+        }
+
+        .editor-group {
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 14px;
+            background: #f8fafc;
+        }
+
+        .editor-group-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .editor-group-head h3 {
+            margin: 0;
+            font-size: 17px;
+        }
+
+        .editor-group-head .next {
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .member-head,
+        .member-row {
+            display: grid;
+            grid-template-columns: 1.1fr 1.2fr 1fr 1.8fr 0.8fr auto;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .member-head {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--muted);
+            padding: 0 2px 6px;
+        }
+
+        .member-row {
+            margin-bottom: 8px;
+        }
+
+        button.small {
+            padding: 7px 10px;
+            border-radius: 10px;
+            font-size: 13px;
+        }
+
+        button.danger {
+            background: var(--danger);
+            color: var(--danger-text);
+        }
+
+        button.danger:hover {
+            background: #fecaca;
+        }
+
+        .editor-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .editor-message {
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            white-space: pre-line;
+        }
+
+        .editor-message.error {
+            color: var(--danger-text);
+        }
+
+        .editor-message.ok {
+            color: var(--success-text);
+        }
+
+        details.editor summary {
+            cursor: pointer;
+            font-weight: 800;
+            font-size: 15px;
+            color: var(--primary-dark);
+            margin-bottom: 12px;
+        }
+
+        @media (max-width: 720px) {
+            .member-head {
+                display: none;
+            }
+
+            .member-row {
+                grid-template-columns: 1fr 1fr;
+                padding: 10px;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                background: white;
+            }
+
+            .member-row .skip-input {
+                grid-column: 1 / -1;
+            }
+
+            .editor-actions button {
+                width: auto;
+                flex: 1 1 40%;
+            }
+        }
     </style>
 </head>
 
@@ -502,6 +710,11 @@
             <h1>回歸帳號萬年曆</h1>
             <p>依照第一次回歸日期自動輪組，並計算本週回歸、下次回歸與最晚可離開時間。</p>
         </section>
+
+        <div class="notice" id="customNotice">
+            <span>你正在看自己修改過的排程，只存在這台裝置的瀏覽器，其他人看不到。</span>
+            <button class="secondary small" onclick="resetToDefault()">還原成共用版本</button>
+        </div>
 
         <section class="panel">
             <div class="panel-title">
@@ -544,10 +757,61 @@
                 </span>
 
                 <span class="legend-item">
+                    <span class="dot special-dot"></span>
+                    單次活動
+                </span>
+
+                <span class="legend-item">
                     <span class="dot today-dot"></span>
                     今日
                 </span>
             </div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-title">
+                <h2>排程設定</h2>
+                <span class="badge" id="dataSourceBadge">共用版本</span>
+            </div>
+
+            <p class="editor-hint">
+                每一組會依序每週輪一次（6 組就是每 6 週回歸一次）。
+                在這裡修改後按「儲存」，只會存在你自己的瀏覽器，其他人看到的還是共用版本。
+                想把修改給別人或換裝置，用「匯出 JSON」再「匯入 JSON」。
+            </p>
+
+            <details class="editor" id="editorDetails">
+                <summary>展開編輯排程</summary>
+
+                <div class="editor-settings">
+                    <label class="field">
+                        第 1 組第一次輪到的日期（週一）
+                        <input type="date" id="setStartDate" />
+                    </label>
+                    <label class="field">
+                        兩次回歸至少間隔（天）
+                        <input type="number" min="0" id="setMinGap" />
+                    </label>
+                    <label class="field">
+                        最晚離開＝下次回歸前幾天
+                        <input type="number" min="0" id="setLeaveBefore" />
+                    </label>
+                </div>
+
+                <div class="editor-groups" id="editorGroups"></div>
+
+                <div class="editor-actions">
+                    <button class="secondary" onclick="addGroup()">＋ 新增組別</button>
+                    <button onclick="saveDraft()">儲存（只有我看得到）</button>
+                    <button class="secondary" onclick="discardDraft()">放棄未儲存的修改</button>
+                    <button class="secondary" onclick="exportData()">匯出 JSON</button>
+                    <button class="secondary" onclick="document.getElementById('importFile').click()">匯入 JSON</button>
+                    <button class="danger" onclick="resetToDefault()">還原成共用版本</button>
+                    <input type="file" id="importFile" accept=".json,application/json" hidden onchange="importData(event)" />
+                </div>
+
+                <div class="editor-message" id="editorMessage"></div>
+            </details>
         </section>
     </main>
 
@@ -560,12 +824,20 @@
         let groups = [];
         let schedule = [];
 
-        let settings = {
+        const BASE_SETTINGS = {
             startDate: "2026/08/03",
             generateWeeks: 80,
             minEnterGapDays: 30,
             leaveBeforeNextDays: 31
         };
+
+        // 使用者自己的修改只存在各自瀏覽器的 localStorage，不會影響 data.json
+        const STORAGE_KEY = "returnCalendar.myData.v1";
+
+        let settings = { ...BASE_SETTINGS };
+        let defaultData = null;
+        let usingCustom = false;
+        let draft = null;
 
         async function loadJsonData() {
             try {
@@ -577,28 +849,77 @@
                     throw new Error(`讀取 data.json 失敗，HTTP 狀態：${response.status}`);
                 }
 
-                const data = await response.json();
-
-                settings = {
-                    ...settings,
-                    ...(data.settings || {})
-                };
-
-                groups = data.groups || [];
-
-                schedule = generateScheduleByGroups();
-
-                renderCurrentWeekReturns();
-                renderCalendar();
+                defaultData = await response.json();
             } catch (error) {
                 console.error(error);
+            }
 
+            const customData = readCustomData();
+            const data = customData || defaultData;
+
+            if (!data) {
                 document.getElementById("weekReturnList").innerHTML = `
         <div class="empty">
           無法讀取 data.json，請確認檔案是否存在，且是否透過本機伺服器開啟。
         </div>
       `;
+                return;
             }
+
+            usingCustom = Boolean(customData);
+            applyData(data);
+        }
+
+        function applyData(data) {
+            settings = {
+                ...BASE_SETTINGS,
+                ...(data.settings || {})
+            };
+
+            groups = data.groups || [];
+
+            schedule = generateScheduleByGroups();
+
+            renderCurrentWeekReturns();
+            renderCalendar();
+            renderSourceState();
+            loadDraftFromCurrent();
+        }
+
+        function readCustomData() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                return raw ? JSON.parse(raw) : null;
+            } catch (error) {
+                console.warn("讀取個人排程失敗：", error);
+                return null;
+            }
+        }
+
+        function writeCustomData(data) {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                return true;
+            } catch (error) {
+                console.warn("儲存個人排程失敗：", error);
+                return false;
+            }
+        }
+
+        function clearCustomData() {
+            try {
+                localStorage.removeItem(STORAGE_KEY);
+            } catch (error) {
+                console.warn("清除個人排程失敗：", error);
+            }
+        }
+
+        function escapeHtml(text) {
+            return String(text)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
         }
 
         function parseDate(dateString) {
@@ -749,10 +1070,15 @@
                         return;
                     }
 
+                    // 4. 個別日期調整（例如該週改成週二才回歸）
+                    const actualDate =
+                        (member.moveDates && member.moveDates[scheduleDate]) || scheduleDate;
+                    const actualDateObj = parseDate(actualDate);
+
                     const lastEnterDate = lastEnterMap[member.account];
 
                     if (lastEnterDate) {
-                        const gapDays = getDayDiff(scheduleDateObj, lastEnterDate);
+                        const gapDays = getDayDiff(actualDateObj, lastEnterDate);
 
                         if (gapDays <= settings.minEnterGapDays) {
                             console.warn(
@@ -760,7 +1086,7 @@
                                 {
                                     account: member.account,
                                     previous: formatDate(lastEnterDate),
-                                    current: scheduleDate
+                                    current: actualDate
                                 }
                             );
                         }
@@ -768,10 +1094,12 @@
 
                     generated.push({
                         account: member.account,
-                        enterDate: scheduleDate
+                        enterDate: actualDate,
+                        special: Boolean(member.endDate),
+                        note: member.note || ""
                     });
 
-                    lastEnterMap[member.account] = scheduleDateObj;
+                    lastEnterMap[member.account] = actualDateObj;
                 });
             }
 
@@ -848,7 +1176,7 @@
                 card.className = "return-card";
 
                 card.innerHTML = `
-        <div class="name">${item.account}</div>
+        <div class="name">${escapeHtml(item.account)}${item.special ? `<span class="tag">${escapeHtml(item.note || "單次活動")}</span>` : ""}</div>
 
         <div class="meta">
           <div>
@@ -930,10 +1258,10 @@
                     const detail = getScheduleDetail(event.account, event.enterDate);
 
                     const eventDiv = document.createElement("div");
-                    eventDiv.className = "event";
+                    eventDiv.className = event.special ? "event special" : "event";
 
                     eventDiv.innerHTML = `
-          ${event.account} 回歸
+          ${escapeHtml(event.account)} 回歸${event.special ? `（${escapeHtml(event.note || "活動")}）` : ""}
           <small>下次：${formatDate(detail.nextEnterDate)}</small>
           <small>最晚離開：${formatDate(detail.latestLeaveDate)}</small>
         `;
@@ -966,6 +1294,311 @@
             currentMonth = fixedToday.getMonth();
 
             renderCalendar();
+        }
+
+        // ===== 排程編輯器 =====
+
+        function renderSourceState() {
+            const badge = document.getElementById("dataSourceBadge");
+            badge.textContent = usingCustom ? "我的版本（只有我看得到）" : "共用版本";
+            badge.classList.toggle("custom", usingCustom);
+            document.getElementById("customNotice").classList.toggle("show", usingCustom);
+        }
+
+        function loadDraftFromCurrent() {
+            draft = JSON.parse(JSON.stringify({ settings, groups }));
+            renderEditor();
+        }
+
+        function toInputDate(dateString) {
+            return dateString ? dateString.replace(/\//g, "-") : "";
+        }
+
+        function fromInputDate(value) {
+            return value ? value.replace(/-/g, "/") : "";
+        }
+
+        function normalizeDateText(text) {
+            const match = String(text).trim().match(/^(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})$/);
+            if (!match) return null;
+
+            const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+            if (date.getMonth() !== Number(match[2]) - 1) return null;
+
+            return formatDate(date);
+        }
+
+        // 該組在今天之後（含本週）下一次輪到的日期
+        function getNextGroupDate(groupIndex, groupCount, startDateString) {
+            const startDate = parseDate(startDateString);
+            const cycleDays = groupCount * 7;
+            let date = addDays(startDate, groupIndex * 7);
+            const weekStart = getStartOfWeek(fixedToday);
+
+            if (date < weekStart) {
+                const cycles = Math.ceil(getDayDiff(weekStart, date) / cycleDays);
+                date = addDays(date, cycles * cycleDays);
+            }
+
+            return date;
+        }
+
+        function setEditorMessage(text, type) {
+            const el = document.getElementById("editorMessage");
+            el.textContent = text;
+            el.className = `editor-message ${type || ""}`;
+        }
+
+        function renderEditor() {
+            if (!draft) return;
+
+            document.getElementById("setStartDate").value = toInputDate(draft.settings.startDate);
+            document.getElementById("setMinGap").value = draft.settings.minEnterGapDays;
+            document.getElementById("setLeaveBefore").value = draft.settings.leaveBeforeNextDays;
+
+            const container = document.getElementById("editorGroups");
+            container.innerHTML = "";
+
+            const groupCount = draft.groups.length;
+
+            draft.groups.forEach((group, gi) => {
+                const box = document.createElement("div");
+                box.className = "editor-group";
+
+                const nextDate = draft.settings.startDate
+                    ? formatDateWithWeekday(getNextGroupDate(gi, groupCount, draft.settings.startDate))
+                    : "-";
+
+                box.innerHTML = `
+          <div class="editor-group-head">
+            <h3>第 ${gi + 1} 組<span class="next">下次輪到：${nextDate}</span></h3>
+            <div class="toolbar-buttons">
+              <button class="secondary small" data-action="add-member">＋ 新增帳號</button>
+              <button class="danger small" data-action="remove-group">刪除此組</button>
+            </div>
+          </div>
+          <div class="member-head">
+            <span>帳號</span><span>首次回歸日</span><span>類型</span>
+            <span>跳過日期（逗號分隔）</span><span>移到組別</span><span></span>
+          </div>
+        `;
+
+                box.querySelector('[data-action="add-member"]').onclick = () => {
+                    group.push({ account: "", enterDate: formatDate(getNextGroupDate(gi, groupCount, draft.settings.startDate)) });
+                    renderEditor();
+                };
+
+                box.querySelector('[data-action="remove-group"]').onclick = () => {
+                    if (group.length && !confirm(`第 ${gi + 1} 組還有 ${group.length} 個帳號，確定要刪除整組嗎？`)) return;
+                    draft.groups.splice(gi, 1);
+                    renderEditor();
+                };
+
+                group.forEach((member, mi) => {
+                    box.appendChild(buildMemberRow(member, gi, mi, groupCount));
+                });
+
+                container.appendChild(box);
+            });
+        }
+
+        function buildMemberRow(member, gi, mi, groupCount) {
+            const row = document.createElement("div");
+            row.className = "member-row";
+
+            const groupOptions = Array.from({ length: groupCount }, (_, i) =>
+                `<option value="${i}" ${i === gi ? "selected" : ""}>第 ${i + 1} 組</option>`
+            ).join("");
+
+            row.innerHTML = `
+        <input type="text" placeholder="帳號名稱" value="${escapeHtml(member.account || "")}" data-field="account" />
+        <input type="date" value="${toInputDate(member.enterDate)}" data-field="enterDate" />
+        <select data-field="type">
+          <option value="regular" ${member.endDate ? "" : "selected"}>固定輪回歸</option>
+          <option value="once" ${member.endDate ? "selected" : ""}>只回歸這一次</option>
+        </select>
+        <input type="text" class="skip-input" placeholder="例：2026/10/26, 2026/12/07"
+          value="${escapeHtml(member.skipDatesText !== undefined ? member.skipDatesText : (member.skipDates || []).join(", "))}" data-field="skipDates" />
+        <select data-field="group">${groupOptions}</select>
+        <button class="danger small" data-action="remove">刪除</button>
+      `;
+
+            row.querySelector('[data-field="account"]').oninput = (e) => {
+                member.account = e.target.value.trim();
+            };
+
+            row.querySelector('[data-field="enterDate"]').onchange = (e) => {
+                member.enterDate = fromInputDate(e.target.value);
+                if (member.endDate) member.endDate = member.enterDate;
+            };
+
+            row.querySelector('[data-field="type"]').onchange = (e) => {
+                if (e.target.value === "once") {
+                    member.endDate = member.enterDate;
+                } else {
+                    delete member.endDate;
+                }
+            };
+
+            row.querySelector('[data-field="skipDates"]').oninput = (e) => {
+                member.skipDatesText = e.target.value;
+            };
+
+            row.querySelector('[data-field="group"]').onchange = (e) => {
+                const target = Number(e.target.value);
+                draft.groups[gi].splice(mi, 1);
+                draft.groups[target].push(member);
+                renderEditor();
+            };
+
+            row.querySelector('[data-action="remove"]').onclick = () => {
+                draft.groups[gi].splice(mi, 1);
+                renderEditor();
+            };
+
+            return row;
+        }
+
+        ["setStartDate", "setMinGap", "setLeaveBefore"].forEach(id => {
+            document.getElementById(id).addEventListener("change", () => {
+                if (!draft) return;
+                readSettingsInputs();
+                renderEditor();
+            });
+        });
+
+        function readSettingsInputs() {
+            draft.settings.startDate = fromInputDate(document.getElementById("setStartDate").value);
+            draft.settings.minEnterGapDays = Number(document.getElementById("setMinGap").value || 0);
+            draft.settings.leaveBeforeNextDays = Number(document.getElementById("setLeaveBefore").value || 0);
+        }
+
+        // 檢查並整理草稿，回傳可存檔的資料或錯誤清單
+        function buildDataFromDraft() {
+            readSettingsInputs();
+
+            const errors = [];
+
+            if (!normalizeDateText(draft.settings.startDate || "")) {
+                errors.push("請填寫第 1 組第一次輪到的日期。");
+            } else if (parseDate(draft.settings.startDate).getDay() !== 1) {
+                errors.push("第 1 組第一次輪到的日期必須是週一。");
+            }
+
+            if (!draft.groups.length) {
+                errors.push("至少要有一組。");
+            }
+
+            const cleanGroups = draft.groups.map((group, gi) => group.map((member, mi) => {
+                const label = `第 ${gi + 1} 組第 ${mi + 1} 列`;
+                const clean = { ...member };
+
+                if (!clean.account) errors.push(`${label}：帳號名稱不能空白。`);
+                if (!clean.enterDate || !normalizeDateText(clean.enterDate)) errors.push(`${label}：請選擇首次回歸日。`);
+
+                if (clean.skipDatesText !== undefined) {
+                    const parts = clean.skipDatesText.split(/[,，\s]+/).filter(Boolean);
+                    const dates = parts.map(normalizeDateText);
+                    const bad = parts.filter((_, i) => !dates[i]);
+
+                    if (bad.length) errors.push(`${label}：跳過日期格式錯誤（${bad.join("、")}），請用 2026/10/26 格式。`);
+
+                    clean.skipDates = dates.filter(Boolean);
+                    delete clean.skipDatesText;
+                }
+
+                if (!clean.skipDates || !clean.skipDates.length) delete clean.skipDates;
+
+                return clean;
+            }));
+
+            return {
+                errors,
+                data: {
+                    settings: { ...settings, ...draft.settings },
+                    groups: cleanGroups
+                }
+            };
+        }
+
+        function saveDraft() {
+            const { errors, data } = buildDataFromDraft();
+
+            if (errors.length) {
+                setEditorMessage(errors.join("\n"), "error");
+                return;
+            }
+
+            if (!writeCustomData(data)) {
+                setEditorMessage("瀏覽器不允許儲存（可能是無痕模式），這次修改只在重新整理前有效。", "error");
+            } else {
+                setEditorMessage("已儲存。這份排程只有你在這台裝置看得到。", "ok");
+            }
+
+            usingCustom = true;
+            applyData(data);
+        }
+
+        function discardDraft() {
+            loadDraftFromCurrent();
+            setEditorMessage("已放棄未儲存的修改。", "ok");
+        }
+
+        function resetToDefault() {
+            if (!defaultData) {
+                setEditorMessage("讀不到共用的 data.json，無法還原。", "error");
+                return;
+            }
+
+            if (!confirm("確定要刪除你自己的修改，回到共用版本嗎？")) return;
+
+            clearCustomData();
+            usingCustom = false;
+            applyData(defaultData);
+            setEditorMessage("已還原成共用版本。", "ok");
+        }
+
+        function exportData() {
+            const { errors, data } = buildDataFromDraft();
+
+            if (errors.length) {
+                setEditorMessage(errors.join("\n"), "error");
+                return;
+            }
+
+            const blob = new Blob([JSON.stringify(data, null, 4)], { type: "application/json" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "data.json";
+            link.click();
+            URL.revokeObjectURL(link.href);
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            event.target.value = "";
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = () => {
+                try {
+                    const data = JSON.parse(reader.result);
+
+                    if (!Array.isArray(data.groups)) {
+                        throw new Error("檔案裡沒有 groups");
+                    }
+
+                    draft = JSON.parse(JSON.stringify({
+                        settings: { ...BASE_SETTINGS, ...(data.settings || {}) },
+                        groups: data.groups
+                    }));
+                    renderEditor();
+                    setEditorMessage("已匯入，確認沒問題後請按「儲存」。", "ok");
+                } catch (error) {
+                    setEditorMessage(`匯入失敗：${error.message}`, "error");
+                }
+            };
+            reader.readAsText(file);
         }
 
         loadJsonData();

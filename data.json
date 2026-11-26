@@ -7,31 +7,31 @@
     },
     "groups": [
         [
-            { "account": "林傳勝", "enterDate": "2026/11/30" }
+            { "account": "傳勝", "enterDate": "2026/11/30" }
         ],
         [
-            { "account": "林沐晨", "enterDate": "2026/12/07" }
+            { "account": "沐晨", "enterDate": "2026/12/07" }
         ],
         [
-            { "account": "林威諺", "enterDate": "2026/12/14" }
+            { "account": "威諺", "enterDate": "2026/12/14" }
         ],
         [
-            { "account": "林椽家", "enterDate": "2026/12/21" }
+            { "account": "椽家", "enterDate": "2026/12/21" }
         ],
         [
-            { "account": "張芷涵", "enterDate": "2026/12/28" }
+            { "account": "芷涵", "enterDate": "2026/12/28" }
         ],
         [
-            { "account": "黃若彤", "enterDate": "2027/01/04" }
+            { "account": "若彤", "enterDate": "2027/01/04" }
         ],
         [
-            { "account": "李智恩", "enterDate": "2027/01/11" }
+            { "account": "智恩", "enterDate": "2027/01/11" }
         ],
         [
-            { "account": "宋雲秦", "enterDate": "2027/01/18" }
+            { "account": "雲秦", "enterDate": "2027/01/18" }
         ],
         [
-            { "account": "祈墨淵", "enterDate": "2027/01/25" }
+            { "account": "墨淵", "enterDate": "2027/01/25" }
         ]
     ]
 }

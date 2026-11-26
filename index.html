@@ -494,25 +494,6 @@
                 padding: 7px 4px;
             }
         }
-
-        /* ===== 特殊活動 / 個人版本提示 ===== */
-
-        .event.special {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .tag {
-            display: inline-block;
-            margin-left: 6px;
-            padding: 2px 6px;
-            border-radius: 6px;
-            background: #fef3c7;
-            color: #92400e;
-            font-size: 12px;
-            font-weight: 700;
-            vertical-align: middle;
-        }
     </style>
 </head>
 
@@ -785,12 +766,7 @@
                         return;
                     }
 
-                    // 2. 支援單次限定活動（如黑五限定支援）
-                    if (member.endDate && scheduleDate !== member.endDate) {
-                        return;
-                    }
-
-                    // 3. 跳過指定的冷卻衝突日期（如黑五前夕不可出勤）
+                    // 2. 跳過指定的冷卻衝突日期（如黑五前夕不可出勤）
                     if (Array.isArray(member.skipDates) && member.skipDates.includes(scheduleDate)) {
                         return;
                     }
@@ -814,9 +790,7 @@
 
                     generated.push({
                         account: member.account,
-                        enterDate: scheduleDate,
-                        special: Boolean(member.endDate),
-                        note: member.note || ""
+                        enterDate: scheduleDate
                     });
 
                     lastEnterMap[member.account] = scheduleDateObj;
@@ -896,7 +870,7 @@
                 card.className = "return-card";
 
                 card.innerHTML = `
-        <div class="name">${escapeHtml(item.account)}${item.special ? `<span class="tag">${escapeHtml(item.note || "單次活動")}</span>` : ""}</div>
+        <div class="name">${escapeHtml(item.account)}</div>
 
         <div class="meta">
           <div>
@@ -978,10 +952,10 @@
                     const detail = getScheduleDetail(event.account, event.enterDate);
 
                     const eventDiv = document.createElement("div");
-                    eventDiv.className = event.special ? "event special" : "event";
+                    eventDiv.className = "event";
 
                     eventDiv.innerHTML = `
-          ${escapeHtml(event.account)} 回歸${event.special ? `（${escapeHtml(event.note || "活動")}）` : ""}
+          ${escapeHtml(event.account)} 回歸
           <small>下次：${formatDate(detail.nextEnterDate)}</small>
           <small>最晚離開：${formatDate(detail.latestLeaveDate)}</small>
         `;

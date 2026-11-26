@@ -564,18 +564,10 @@
         const BASE_SETTINGS = {
             startDate: "2026/11/30",
             generateWeeks: 120,
-            minEnterGapDays: 30,
             leaveBeforeNextDays: 31
         };
 
         let settings = { ...BASE_SETTINGS };
-
-        // 清掉舊版排程編輯器存在瀏覽器裡的個人排程，避免殘留資料
-        try {
-            localStorage.removeItem("returnCalendar.myData.v1");
-        } catch (error) {
-            // 無痕模式等情況讀不到 localStorage，忽略即可
-        }
 
         async function loadJsonData() {
             let data = null;
@@ -671,74 +663,12 @@
             return result;
         }
 
-        function getDayDiff(dateA, dateB) {
-            const oneDay = 24 * 60 * 60 * 1000;
-
-            const cleanA = new Date(
-                dateA.getFullYear(),
-                dateA.getMonth(),
-                dateA.getDate()
-            );
-
-            const cleanB = new Date(
-                dateB.getFullYear(),
-                dateB.getMonth(),
-                dateB.getDate()
-            );
-
-            return Math.round((cleanA - cleanB) / oneDay);
-        }
-
-        function validateStartDateIsMonday() {
-            const startDate = parseDate(settings.startDate);
-
-            if (startDate.getDay() !== 1) {
-                console.warn("settings.startDate 不是週一，目前日期：", settings.startDate);
-            }
-        }
-
-        function validateGroups() {
-            if (!groups.length) {
-                console.warn("data.json 裡沒有 groups 資料。");
-                return;
-            }
-
-            if (groups.length !== 9) {
-                console.warn(`目前 groups 不是 9 組，而是 ${groups.length} 組：`, groups);
-            }
-
-            groups.forEach((group, groupIndex) => {
-                if (!Array.isArray(group)) {
-                    console.warn(`第 ${groupIndex + 1} 組不是陣列：`, group);
-                    return;
-                }
-
-                // 移除原先寫死 2 人的警告，改為檢查至少有成員
-                if (group.length === 0) {
-                    console.warn(`第 ${groupIndex + 1} 組沒有任何成員`);
-                }
-
-                group.forEach(member => {
-                    if (!member.account || !member.enterDate) {
-                        console.warn(
-                            `第 ${groupIndex + 1} 組有成員缺少 account 或 enterDate：`,
-                            member
-                        );
-                    }
-                });
-            });
-        }
-
         function generateScheduleByGroups() {
-            validateStartDateIsMonday();
-            validateGroups();
-
             if (!groups.length) {
                 return [];
             }
 
             const generated = [];
-            const lastEnterMap = {};
 
             const startDate = parseDate(settings.startDate);
             const totalWeeks = Number(settings.generateWeeks || 80);
@@ -761,64 +691,28 @@
 
                     const firstEnterDateObj = parseDate(member.enterDate);
 
-                    // 1. 尚未到該帳號的首次開放日期
+                    // 尚未到該帳號的首次回歸日期
                     if (scheduleDateObj < firstEnterDateObj) {
                         return;
-                    }
-
-                    // 2. 跳過指定的冷卻衝突日期（如黑五前夕不可出勤）
-                    if (Array.isArray(member.skipDates) && member.skipDates.includes(scheduleDate)) {
-                        return;
-                    }
-
-                    const lastEnterDate = lastEnterMap[member.account];
-
-                    if (lastEnterDate) {
-                        const gapDays = getDayDiff(scheduleDateObj, lastEnterDate);
-
-                        if (gapDays <= settings.minEnterGapDays) {
-                            console.warn(
-                                `${member.account} 的進入間隔只有 ${gapDays} 天，未超過 ${settings.minEnterGapDays} 天`,
-                                {
-                                    account: member.account,
-                                    previous: formatDate(lastEnterDate),
-                                    current: scheduleDate
-                                }
-                            );
-                        }
                     }
 
                     generated.push({
                         account: member.account,
                         enterDate: scheduleDate
                     });
-
-                    lastEnterMap[member.account] = scheduleDateObj;
                 });
             }
 
-            return generated.sort((a, b) => {
-                const dateDiff = parseDate(a.enterDate) - parseDate(b.enterDate);
-
-                if (dateDiff !== 0) {
-                    return dateDiff;
-                }
-
-                return a.account.localeCompare(b.account, "zh-Hant");
-            });
+            // 依週次產生，本來就是日期順序
+            return generated;
         }
 
         function calculateNextEnterDate(account, currentEnterDate) {
             const currentDate = parseDate(currentEnterDate);
 
-            const futureRecord = schedule
-                .filter(item => {
-                    if (item.account !== account) return false;
-
-                    const itemDate = parseDate(item.enterDate);
-                    return itemDate > currentDate;
-                })
-                .sort((a, b) => parseDate(a.enterDate) - parseDate(b.enterDate))[0];
+            const futureRecord = schedule.find(item =>
+                item.account === account && parseDate(item.enterDate) > currentDate
+            );
 
             if (futureRecord) {
                 return parseDate(futureRecord.enterDate);
@@ -848,12 +742,10 @@
             document.getElementById("currentWeekRange").textContent =
                 `${formatDate(start)} - ${formatDate(end)}`;
 
-            const weekReturns = schedule
-                .filter(item => {
-                    const enterDate = parseDate(item.enterDate);
-                    return enterDate >= start && enterDate < end;
-                })
-                .sort((a, b) => parseDate(a.enterDate) - parseDate(b.enterDate));
+            const weekReturns = schedule.filter(item => {
+                const enterDate = parseDate(item.enterDate);
+                return enterDate >= start && enterDate < end;
+            });
 
             const container = document.getElementById("weekReturnList");
             container.innerHTML = "";

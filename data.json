@@ -2,7 +2,6 @@
     "settings": {
         "startDate": "2026/11/30",
         "generateWeeks": 120,
-        "minEnterGapDays": 30,
         "leaveBeforeNextDays": 31
     },
     "groups": [
